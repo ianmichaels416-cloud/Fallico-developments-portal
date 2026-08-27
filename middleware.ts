@@ -23,7 +23,7 @@ export function middleware(req: NextRequest) {
 
   if (auth) {
     const [, encoded] = auth.split(' ');
-    const decoded = Buffer.from(encoded, 'base64').toString();
+    const decoded = atob(encoded); // atob, not Buffer
     const [, password] = decoded.split(':');
     if (password === expectedPassword) {
       return NextResponse.next();
