@@ -1,8 +1,6 @@
 // lib/db.ts
 // Direct Postgres connection via the `postgres` package — no Prisma,
-// no CLI, no shadow database, no migration engine. For an app this
-// small (3 tables, one purpose), this is simpler and has nothing that
-// can get stuck the way Prisma's CLI did on the other project.
+// no CLI, no shadow database, no migration engine.
 //
 // Requires DATABASE_URL in your environment (Neon connection string).
 
@@ -14,4 +12,5 @@ if (!process.env.DATABASE_URL) {
 
 export const sql = postgres(process.env.DATABASE_URL, {
   ssl: 'require',
+  prepare: false, // required for Neon's pooled connection (PgBouncer transaction mode)
 });
