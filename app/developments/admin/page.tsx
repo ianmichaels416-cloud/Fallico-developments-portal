@@ -16,16 +16,22 @@ async function createLink(formData: FormData) {
   const recipientName = formData.get('recipientName') as string;
   const recipientEmail = formData.get('recipientEmail') as string;
 
-  const devRows = await sql`SELECT id FROM developments WHERE slug = ${slug} LIMIT 1`;
-  const development = devRows[0];
-  if (!development) throw new Error(`Unknown development: ${slug}`);
+  let token: string;
+  try {
+    const devRows = await sql`SELECT id FROM developments WHERE slug = ${slug} LIMIT 1`;
+    const development = devRows[0];
+    if (!development) throw new Error(`Unknown development: ${slug}`);
 
-  const linkRows = await sql`
-    INSERT INTO development_links (development_id, recipient_name, recipient_email)
-    VALUES (${development.id}, ${recipientName}, ${recipientEmail || null})
-    RETURNING token
-  `;
-  const token = linkRows[0].token;
+    const linkRows = await sql`
+      INSERT INTO development_links (development_id, recipient_name, recipient_email)
+      VALUES (${development.id}, ${recipientName}, ${recipientEmail || null})
+      RETURNING token
+    `;
+    token = linkRows[0].token;
+  } catch (err: any) {
+    const message = encodeURIComponent(err?.message ?? String(err));
+    redirect(`/developments/admin?error=${message}`);
+  }
 
   redirect(`/developments/admin?created=${token}&slug=${slug}`);
 }
@@ -33,9 +39,9 @@ async function createLink(formData: FormData) {
 export default async function DevelopmentAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ created?: string; slug?: string }>;
+  searchParams: Promise<{ created?: string; slug?: string; error?: string }>;
 }) {
-  const { created, slug: slugParam } = await searchParams;
+  const { created, slug: slugParam, error } = await searchParams;
 
   const developments = await sql`SELECT id, slug, name FROM developments ORDER BY created_at DESC`;
 
@@ -49,6 +55,13 @@ export default async function DevelopmentAdminPage({
         Generate a personal link with site plan, floor plans, and pricing
         for someone who&apos;s requested info.
       </p>
+
+      {error && (
+        <div className="border-l-4 border-red-600 rounded p-4 bg-red-50 mb-8">
+          <p className="text-sm font-medium text-red-800 mb-1">Error:</p>
+          <code className="text-sm text-red-800 break-all">{decodeURIComponent(error)}</code>
+        </div>
+      )}
 
       {generatedUrl && (
         <div className="border-l-4 border-[#BA0000] rounded p-4 bg-black/[0.03] mb-8">
