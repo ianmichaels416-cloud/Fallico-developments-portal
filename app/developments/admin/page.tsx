@@ -46,7 +46,7 @@ export default async function DevelopmentAdminPage({
   const developments = await sql`SELECT id, slug, name FROM developments ORDER BY created_at DESC`;
 
   const baseUrl = process.env.NEXT_PUBLIC_PORTAL_BASE_URL ?? 'https://plans.thefallicogroup.com';
-  const generatedUrl = created && slugParam ? `${baseUrl}/${slugParam}?t=${created}` : null;
+  const generatedUrl = created && slugParam ? `${baseUrl}/developments/${slugParam}?t=${created}` : null;
 
   return (
     <main className={`max-w-xl mx-auto px-6 py-12 ${montserrat.className}`}>
