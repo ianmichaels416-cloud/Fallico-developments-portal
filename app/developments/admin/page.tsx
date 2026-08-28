@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import CopyLinkButton from './CopyLinkButton';
 import { Montserrat } from 'next/font/google';
 
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '600', '700'] });
+const montserrat = Montserrat({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 async function createLink(formData: FormData) {
   'use server';
@@ -33,20 +33,33 @@ async function createLink(formData: FormData) {
     redirect(`/developments/admin?error=${message}`);
   }
 
-  redirect(`/developments/admin?created=${token}&slug=${slug}`);
+  const params = new URLSearchParams({
+    created: token,
+    slug,
+    name: recipientName,
+  });
+  if (recipientEmail) params.set('email', recipientEmail);
+  redirect(`/developments/admin?${params.toString()}`);
 }
 
 export default async function DevelopmentAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ created?: string; slug?: string; error?: string }>;
+  searchParams: Promise<{ created?: string; slug?: string; error?: string; name?: string; email?: string }>;
 }) {
-  const { created, slug: slugParam, error } = await searchParams;
+  const { created, slug: slugParam, error, name, email } = await searchParams;
 
   const developments = await sql`SELECT id, slug, name FROM developments ORDER BY created_at DESC`;
 
   const baseUrl = process.env.NEXT_PUBLIC_PORTAL_BASE_URL ?? 'https://plans.thefallicogroup.com';
   const generatedUrl = created && slugParam ? `${baseUrl}/developments/${slugParam}?t=${created}` : null;
+
+  const developmentName = developments.find((d: any) => d.slug === slugParam)?.name ?? 'the development';
+  const mailtoUrl = generatedUrl && email
+    ? `mailto:${email}?subject=${encodeURIComponent(`${developmentName} — Site Plan, Floor Plans & Pricing`)}&body=${encodeURIComponent(
+        `Hi ${name || 'there'},\n\nHere's your link with the full site plan, floor plans, and pricing for ${developmentName}:\n\n${generatedUrl}\n\nLet me know if you have any questions.\n\nFrank Fallico\nThe Fallico Group`
+      )}`
+    : null;
 
   return (
     <main className={`max-w-xl mx-auto px-6 py-12 ${montserrat.className}`}>
@@ -66,10 +79,19 @@ export default async function DevelopmentAdminPage({
       {generatedUrl && (
         <div className="border-l-4 border-[#BA0000] rounded p-4 bg-black/[0.03] mb-8">
           <p className="text-sm text-black/60 mb-2">Link ready to send:</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-3">
             <code className="flex-1 text-sm break-all">{generatedUrl}</code>
             <CopyLinkButton url={generatedUrl} />
           </div>
+          {mailtoUrl ? (
+            <a href={mailtoUrl} className="inline-block bg-[#BA0000] text-white text-sm rounded px-4 py-2 font-medium">
+              Email this link to {email}
+            </a>
+          ) : (
+            <p className="text-xs text-black/40">
+              No email was entered — copy the link above to send it manually.
+            </p>
+          )}
         </div>
       )}
 
@@ -90,7 +112,7 @@ export default async function DevelopmentAdminPage({
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Email <span className="text-black/40">(optional)</span>
+            Email <span className="text-black/40">(optional — lets you email the link with one click)</span>
           </label>
           <input name="recipientEmail" type="email" className="w-full border rounded px-4 py-3" placeholder="john@email.com" />
         </div>

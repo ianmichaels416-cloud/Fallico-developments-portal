@@ -62,6 +62,48 @@ function AssetIcon({ type }: { type: string }) {
   );
 }
 
+function SocialIcon({ platform }: { platform: 'instagram' | 'tiktok' | 'facebook' | 'youtube' | 'website' }) {
+  const common = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  if (platform === 'instagram') {
+    return (
+      <svg {...common}>
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+  if (platform === 'facebook') {
+    return (
+      <svg {...common}>
+        <path d="M15 4h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3V4z" />
+      </svg>
+    );
+  }
+  if (platform === 'tiktok') {
+    return (
+      <svg {...common}>
+        <path d="M14 4v11a3 3 0 1 1-3-3" />
+        <path d="M14 4a5 5 0 0 0 5 5" />
+      </svg>
+    );
+  }
+  if (platform === 'youtube') {
+    return (
+      <svg {...common}>
+        <rect x="3" y="6" width="18" height="12" rx="3" />
+        <path d="M11 10l4 2-4 2v-4z" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </svg>
+  );
+}
+
 export default async function DevelopmentPage({
   params,
   searchParams,
@@ -113,14 +155,18 @@ export default async function DevelopmentPage({
     }
   }
 
+  const socialLinks = [
+    { platform: 'instagram' as const, url: 'https://www.instagram.com/thefallicogroup' },
+    { platform: 'tiktok' as const, url: 'https://www.tiktok.com/@thefallicogroup' },
+    { platform: 'facebook' as const, url: 'https://www.facebook.com/p/The-Fallico-Group-RE-61588560275233/' },
+    { platform: 'youtube' as const, url: 'https://www.youtube.com/@thefallicogroup' },
+  ];
+
   return (
     <main className={`min-h-screen bg-white text-black ${montserrat.className}`}>
-      <header className="bg-black py-4 px-6 flex items-center justify-between">
+      <header className="bg-black py-6 px-6 flex items-center justify-center">
         <a href="https://www.thefallicogroup.com" aria-label="The Fallico Group">
-          <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-11 h-11 md:w-12 md:h-12" />
-        </a>
-        <a href="https://www.thefallicogroup.com" className="text-white/70 text-sm font-medium hover:text-white transition-colors">
-          thefallicogroup.com
+          <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-16 h-16 md:w-20 md:h-20" />
         </a>
       </header>
 
@@ -201,11 +247,28 @@ export default async function DevelopmentPage({
         )}
       </section>
 
-      <footer className="bg-black text-white/60 text-sm py-8 px-6 text-center">
-        <a href="https://www.thefallicogroup.com" className="hover:text-white transition-colors">
-          The Fallico Group
-        </a>
-        {' · '}Harvey Kalles Real Estate Ltd.
+      <footer className="bg-black text-white py-12 px-6">
+        <div className="max-w-md mx-auto flex flex-col items-center text-center gap-4">
+          <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-16 h-16" />
+          <div>
+            <p className="text-[#BA0000] text-xs font-semibold uppercase tracking-wide mb-2">
+              Contact Us
+            </p>
+            <p className="font-semibold">Frank Fallico</p>
+            <p className="text-white/70 text-sm mt-1">416-899-5655</p>
+            <p className="text-white/70 text-sm">info@thefallicogroup.com</p>
+          </div>
+          <div className="flex items-center gap-4 mt-2">
+            {socialLinks.map((social) => (
+              <a key={social.platform} href={social.url} target="_blank" rel="noopener noreferrer" aria-label={social.platform} className="text-white/60 hover:text-white transition-colors">
+                <SocialIcon platform={social.platform} />
+              </a>
+            ))}
+            <a href="https://www.thefallicogroup.com" target="_blank" rel="noopener noreferrer" aria-label="Website" className="text-white/60 hover:text-white transition-colors">
+              <SocialIcon platform="website" />
+            </a>
+          </div>
+        </div>
       </footer>
     </main>
   );
