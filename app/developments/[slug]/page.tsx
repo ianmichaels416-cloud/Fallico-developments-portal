@@ -149,7 +149,7 @@ export default async function DevelopmentPage({
                 <div className="flex items-center gap-2 bg-white/95 rounded-md pl-3 pr-3 py-1.5">
                   <span className="text-black/50 text-[11px] uppercase tracking-wide">Built by</span>
                   <img
-                    src="/images/lindvest-logo.png"
+                    src="/images/lindvest.png"
                     alt={development.builder}
                     className="h-4 md:h-[18px] w-auto object-contain"
                   />
