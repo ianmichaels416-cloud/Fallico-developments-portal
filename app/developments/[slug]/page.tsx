@@ -119,10 +119,7 @@ export default async function DevelopmentPage({
         <a href="https://www.thefallicogroup.com" aria-label="The Fallico Group">
           <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-11 h-11 md:w-12 md:h-12" />
         </a>
-        
-          href="https://www.thefallicogroup.com"
-          className="text-white/70 text-sm font-medium hover:text-white transition-colors"
-        >
+        <a href="https://www.thefallicogroup.com" className="text-white/70 text-sm font-medium hover:text-white transition-colors">
           thefallicogroup.com
         </a>
       </header>
@@ -181,13 +178,7 @@ export default async function DevelopmentPage({
             </h2>
             <div className="grid sm:grid-cols-2 gap-3">
               {assets.map((asset) => (
-                
-                  key={asset.id}
-                  href={asset.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-4 rounded-lg border border-black/10 p-4 hover:border-[#BA0000]/40 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white"
-                >
+                <a key={asset.id} href={asset.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4 rounded-lg border border-black/10 p-4 hover:border-[#BA0000]/40 hover:shadow-md hover:-translate-y-0.5 transition-all bg-white">
                   <span className="flex-shrink-0 w-10 h-10 rounded-full bg-black/[0.04] group-hover:bg-[#BA0000]/10 flex items-center justify-center text-black/60 group-hover:text-[#BA0000] transition-colors">
                     <AssetIcon type={asset.type} />
                   </span>
