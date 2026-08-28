@@ -170,9 +170,15 @@ export default async function DevelopmentPage({
         </a>
       </header>
 
-      <section className="relative h-[62vh] md:h-[68vh] overflow-hidden">
+      <section className="relative h-[62vh] md:h-[68vh] overflow-hidden bg-black">
         <img
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl brightness-50"
+          src={development.hero_image_url ?? ''}
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-auto max-w-none"
           src={development.hero_image_url ?? ''}
           alt={development.name}
         />
