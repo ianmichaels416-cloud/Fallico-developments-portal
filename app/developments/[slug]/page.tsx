@@ -164,15 +164,15 @@ export default async function DevelopmentPage({
 
   return (
     <main className={`min-h-screen bg-white text-black ${montserrat.className}`}>
-      <header className="bg-black py-6 px-6 flex items-center justify-center">
+      <header className="bg-black py-3 px-6 flex items-center justify-center">
         <a href="https://www.thefallicogroup.com" aria-label="The Fallico Group">
-          <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-16 h-16 md:w-20 md:h-20" />
+          <img src="/images/logo-circle.png" alt="The Fallico Group" className="h-20 md:h-24 w-auto" />
         </a>
       </header>
 
-      <section className="relative">
+      <section className="relative h-[62vh] md:h-[68vh] overflow-hidden">
         <img
-          className="w-full h-[62vh] md:h-[68vh] object-cover"
+          className="w-full h-full object-cover"
           src={development.hero_image_url ?? ''}
           alt={development.name}
         />
@@ -249,7 +249,7 @@ export default async function DevelopmentPage({
 
       <footer className="bg-black text-white py-12 px-6">
         <div className="max-w-md mx-auto flex flex-col items-center text-center gap-4">
-          <img src="/images/logo-circle.png" alt="The Fallico Group" className="w-16 h-16" />
+          <img src="/images/logo-circle.png" alt="The Fallico Group" className="h-20 w-auto" />
           <div>
             <p className="text-[#BA0000] text-xs font-semibold uppercase tracking-wide mb-2">
               Contact Us
