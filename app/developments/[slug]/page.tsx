@@ -47,7 +47,14 @@ export default async function DevelopmentPage({
   const { t: token } = await searchParams;
 
   const development = await getDevelopment(slug);
-  if (!development) notFound();
+  if (!development) {
+    return (
+      <main className="p-8 font-mono text-sm">
+        <p>DEBUG: no development found.</p>
+        <p>slug received: &quot;{slug}&quot; (length: {slug.length})</p>
+      </main>
+    );
+  }
 
   let link = null;
   let assets: Awaited<ReturnType<typeof resolveAssetUrls>> = [];
