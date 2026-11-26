@@ -3,3 +3,6 @@ node_modules
 .env
 .env.local
 .DS_Store
+
+# North Hill staging PDFs live in Blob; too large to track
+assets-to-upload/north-hill/
