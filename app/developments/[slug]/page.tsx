@@ -132,9 +132,11 @@ export default async function DevelopmentPage({
   }
 
   let link = null;
+  let packageToken: string | null = null;
   let assets: Awaited<ReturnType<typeof resolveAssetUrls>> = [];
 
   if (token) {
+    // 1) A single-development link for this development.
     const linkRows = await sql`
       SELECT id, recipient_name, first_viewed_at
       FROM development_links
@@ -151,7 +153,24 @@ export default async function DevelopmentPage({
             view_count = view_count + 1
         WHERE id = ${link.id}
       `;
+    } else {
+      // 2) A multi-project package link that includes this development.
+      const pkgRows = await sql`
+        SELECT cl.recipient_name, cl.first_viewed_at
+        FROM client_links cl
+        JOIN client_link_items cli ON cli.client_link_id = cl.id
+        WHERE cl.token = ${token} AND cli.development_id = ${development.id}
+        LIMIT 1
+      `;
+      if (pkgRows[0]) {
+        link = pkgRows[0];
+        packageToken = token;
+        // Package-level view tracking happens on the /package landing page,
+        // so individual development opens don't inflate the count here.
+      }
+    }
 
+    if (link) {
       const assetRows = await sql`
         SELECT id, asset_type, label, storage_key
         FROM development_assets
@@ -229,6 +248,14 @@ export default async function DevelopmentPage({
       <section className="max-w-3xl mx-auto px-6 md:px-0 pb-20 md:pb-24">
         {link ? (
           <>
+            {packageToken && (
+              <a
+                href={`/package/${packageToken}`}
+                className="inline-flex items-center gap-1 text-sm font-medium text-black/60 hover:text-[#BA0000] mb-5 transition-colors"
+              >
+                ← Back to your projects
+              </a>
+            )}
             <p className="text-sm font-semibold uppercase tracking-wide text-[#BA0000] mb-1">
               Your package
             </p>
