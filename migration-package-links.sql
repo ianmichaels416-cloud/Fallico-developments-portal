@@ -8,7 +8,9 @@
 
 CREATE TABLE IF NOT EXISTS client_links (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  token VARCHAR(43) UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'base64url'),
+  -- hex, not base64url: Postgres encode() only supports base64/hex/escape.
+  -- The app also sets this explicitly, so the default is just a fallback.
+  token VARCHAR(43) UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(16), 'hex'),
   recipient_name VARCHAR(200) NOT NULL,
   recipient_email VARCHAR(320),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -16,6 +18,10 @@ CREATE TABLE IF NOT EXISTS client_links (
   last_viewed_at TIMESTAMPTZ,
   view_count INTEGER DEFAULT 0
 );
+
+-- Repair the token default on an already-created table (the first version
+-- of this migration used an unsupported 'base64url' encoding).
+ALTER TABLE client_links ALTER COLUMN token SET DEFAULT encode(gen_random_bytes(16), 'hex');
 
 CREATE TABLE IF NOT EXISTS client_link_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

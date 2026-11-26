@@ -6,6 +6,7 @@
 // Pick TWO OR MORE → a multi-project "package" link (/package/<token>) that
 // opens all of them from one link.
 
+import { randomBytes } from 'crypto';
 import { sql } from '@/lib/db';
 import { redirect } from 'next/navigation';
 import CopyLinkButton from './CopyLinkButton';
@@ -52,9 +53,12 @@ async function createLink(formData: FormData) {
       const missing = slugs.filter((s) => !idBySlug.has(s));
       if (missing.length) throw new Error(`Unknown development(s): ${missing.join(', ')}`);
 
+      // Generate the token in app code — Postgres encode() has no
+      // 'base64url', so we don't rely on a DB default here.
+      const token = randomBytes(16).toString('hex');
       const linkRows = await sql`
-        INSERT INTO client_links (recipient_name, recipient_email)
-        VALUES (${recipientName}, ${recipientEmail})
+        INSERT INTO client_links (token, recipient_name, recipient_email)
+        VALUES (${token}, ${recipientName}, ${recipientEmail})
         RETURNING id, token
       `;
       const clientLinkId = linkRows[0].id;
